@@ -1,0 +1,9 @@
+#This file contains all changes made on docker server.
+
+1.)Installed CentOS 7 (192.168.1.21)
+
+2.)Configure epel repo for this host 
+
+3.)Installed docker engine on this host.
+
+4.) 
