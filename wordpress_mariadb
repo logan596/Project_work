@@ -1,0 +1,14 @@
+use mariadb and link it with wordpress
+
+ start mariadb
+ --> #docker run --name mariadbtest -e MYSQL_ROOT_PASSWORD=mailjol@123 -d -p 8081:3306 mariadb:10.1.18
+
+
+ start wordpress or linking wordpress with mariadb
+ --> #docker run --name wordpresstest --link mariadbtest:mysql -e WORDPRESS_DB_PASSWORD=mailjol@123 -d -p 8080:80 wordpress:4.6.1-apache
+
+
+
+access it via browser:
+
+http://localhost:8080
