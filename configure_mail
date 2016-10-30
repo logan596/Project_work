@@ -1,0 +1,15 @@
+#Configure postfix first
+
+Refere below link:
+
+ --> https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-postfix-as-a-send-only-smtp-server-on-ubuntu-16-04
+
+
+Then enable the property in WP
+
+Use the following link:
+ --> http://www.wpbeginner.com/wp-tutorials/how-to-use-smtp-server-to-send-wordpress-emails/
+
+ --> https://www.siteground.com/tutorials/wordpress/send-emails-with-smtp.htm
+
+
