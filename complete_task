@@ -1,10 +1,10 @@
 #This file contains all changes made on docker server.
 
-1.)Installed CentOS 7 (192.168.1.21)
+1.) Installed CentOS 7 (192.168.1.21)
 
-2.)Configure epel repo for this host 
+2.) Configure epel repo for this host 
 
-3.)Installed docker engine on this host.
+3.) Installed docker engine on this host.
 
 4.) Hello-world testing completed on docker engine.
 
@@ -12,4 +12,8 @@
 
 6.) download wordpress:4.6.1 image and run this in container named wordpresstest on port 8080 password is mailjol@123 
 
-7.)
+7.) Create Intro web page.
+
+8.) Added Online Question paper(Installed Wp-pro Quiz plugin) in Interview questions. (Total there are 20 questions and 20 mins).
+
+9.) 
