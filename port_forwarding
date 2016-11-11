@@ -1,0 +1,33 @@
+Port Forwarding with xinetd
+Posted on June 21, 2012	by azouhr
+
+In some network environments, where for example administration lans or some private lans are deployed, it might still be necessary to access a specific port of a machine inside that lan from the outside. Commonly, you would have to access a jump host and from there you would be able to reach the respective machine.
+
+In our case, we had to reach the management port of a switch in a private lan. For example:
+
+    the private has the IP address range 192.168.10.0/24
+    the switch is configured with 192.168.10.254 and its management port is 80
+    the jump host with access to both networks has the external address 10.10.10.1
+
+To access the switch directly at address 10.10.10.1 with port 81, you can configure xinetd on the jump host with the following configuration:
+
+# cat /etc/xinetd.d/http-switch
+service http-switch
+{
+ disable = no
+ type = UNLISTED
+ socket_type = stream
+ protocol = tcp
+ wait = no
+ redirect = 192.168.10.254 80
+ bind = 10.10.10.1
+ port = 81
+ user = nobody
+}
+
+After reloading (or starting if not yet done so) xinetd, you can reach the switch by pointing your browser to http://10.10.10.1:81:
+
+chkconfig xinetd on
+rcxinetd restart
+
+The same principle can also be used when forwarding e.g. ssh ports of machines.
