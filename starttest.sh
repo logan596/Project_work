@@ -14,4 +14,4 @@ https://azouhr.wordpress.com/2012/06/21/port-forwarding-with-xinetd/
 
 https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/sect-Security_Guide-TCP_Wrappers_and_xinetd-xinetd_Configuration_Files.html
 
-
+http://www.cyberciti.biz/faq/linux-how-do-i-configure-xinetd-service/
