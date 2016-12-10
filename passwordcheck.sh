@@ -9,7 +9,7 @@ then
         exit 1
 else
        #echo "Enter the Password:"
-        read PASSWD <<< "123"
+        read PASSWD <<< "87654321"
         export PASSWD
         ORIGPASS=`grep -w "$USERNAME" /etc/shadow | cut -d: -f2`
         export ALGO=`echo $ORIGPASS | cut -d'$' -f2`
