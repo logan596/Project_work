@@ -45,6 +45,9 @@
 
 #4.Create two users: john with uid/gid equal to 2000, password 12345678 and davis with uid/gid equal to 3000, password 87654321. Make davis‘ account validity stopping in one month. >>>> Done
 
+#5.Allow davis (and only davis) to get full access to john‘s home directory. >>>>> Done
+
+#6.Create a directory named /common. Allow john and davis to share documents in the /common directory using a group called team. Both of them can read, write and remove documents from the other in this directory but any user not member of the group can’t. >>> Done
 
 
 
