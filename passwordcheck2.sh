@@ -1,4 +1,9 @@
 #!/bin/bash
+
+###################################################################################################
+#  Create user davis with UID=3000 pasword=87654321 and it will expires in one month i.e 30 days  #
+###################################################################################################
+
 EXP=`date -d "30 days" +"%b-%d-%Y"`
 ACC_EXP=`chage -l davis | grep ^Account | awk -F : '{print $2}' | sed 's/\ //' | sed 's/\,//g' |sed 's/\ /-/g'`
 
