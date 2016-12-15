@@ -1,0 +1,2 @@
+ docker run --privileged -d -ti -e "container=docker"  -v /sys/fs/cgroup:/sys/fs/cgroup  trinitronx/ansible-base:stable-centos7  /usr/sbin/init
+af830281205bc4627fc7635015c59fe4d5d07317dd09ed74ab5dbd667d90da3f

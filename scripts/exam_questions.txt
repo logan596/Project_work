@@ -50,8 +50,12 @@
 #6.Create a directory named /common. Allow john and davis to share documents in the /common directory using a group called team. Both of them can read, write and remove documents from the other in this directory but any user not member of the group can’t. >>> Done
 
 
+#11.Create a cron job running as root, starting at 11PM every day and update the databases of host by using updatedb command. >> Done
 
 
+
+#12.Set the default target to boot into X Window level (previously level 5). >> Ajit 
+#13.Change the hostname to mycentos.example.com >> Ajit
 
 
 

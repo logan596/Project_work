@@ -1,0 +1,155 @@
+iSCSI Initiator Configuration
+
+To create an iSCSI initiator, you need to follow several steps on the client virtual machine.
+
+Install the following package:
+
+# yum install -y iscsi-initiator-utils
+
+Edit the /etc/iscsi/initiatorname.iscsi and replace the content with the initiator name that you previously configured as acl on the target side:
+
+InitiatorName=iqn.2014-08.com.example:client
+
+If you previously set up a userid and a password on the server, edit the /etc/iscsi/iscsid.conf file and paste the following lines:
+
+node.session.auth.authmethod = CHAP
+node.session.auth.username = usr
+node.session.auth.password = pwd
+
+Start the iscsi service:
+
+# systemctl start iscsi
+
+Caution: This action is mandatory to be able to unmount the remote resource when rebooting. Don’t confuse iscsid and iscsi services!
+
+Execute the iscsiadm command in discovery mode with the server ip address (here 192.168.1.81):
+
+# iscsiadm --mode discovery --type sendtargets --portal 192.168.1.81
+192.168.1.81:3260,1 iqn.2014-08.com.example:t1
+
+Note1: If you don’t specify any port, the default port is 3260.
+Note2: Don’t mention a DNS entry as your portal address (here 192.168.1.81), this would be a bad idea causing you a lot of trouble.
+
+Execute the iscsiadm command in node mode with the server ip address (here 192.168.1.81):
+
+# iscsiadm --mode node --targetname iqn.2014-08.com.example:t1 --portal 192.168.1.81 --login
+Logging in to [iface: default, target: iqn.2014-08.com.example:t1, portal: 192.168.1.81,3260] (multiple)
+Login to [iface: default, target: iqn.2014-08.com.example:t1, portal: 192.168.1.81,3260] successful.
+
+Note: As before, if you don’t specify any port, the default port is 3260. Use of DNS entry as portal address only brings problems.
+
+To check the configuration, type:
+
+# lsblk --scsi
+NAME HCTL       TYPE VENDOR   MODEL             REV TRAN
+sda  2:0:0:0    disk LIO-ORG  shareddata       4.0  iscsi
+
+To be sure that your resource is not in read-only mode (1=read-only mode), type:
+
+# lsblk | egrep "NAME|sda"
+NAME               MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                  8:0    0  100M  0 disk
+
+Now, you can create a file system:
+
+# mkfs.ext4 /dev/sda
+mke2fs 1.42.9 (28-Dec-2013)
+/dev/sda is entire device, not just one partition!
+Proceed anyway? (y,n) y
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+Stride=0 blocks, Stripe width=4096 blocks
+25688 inodes, 102400 blocks
+5120 blocks (5.00%) reserved for the super user
+First data block=1
+Maximum filesystem blocks=33685504
+13 block groups
+8192 blocks per group, 8192 fragments per group
+1976 inodes per group
+Superblock backups stored on blocks:
+8193, 24577, 40961, 57345, 73729
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+Retrieve the UUID of this disk:
+
+# blkid | grep "/dev/sda"
+/dev/sda: UUID="4a184c70-20ad-4d91-a0b1-c2cf0eb1986f" TYPE="ext4"
+
+Add the disk UUID to the /etc/fstab file:
+
+# echo "UUID=..." >> /etc/fstab
+
+Note: Be very careful to type >> and not >, otherwise this will destroy all your configuration!
+Make a copy of the /etc/fstab file before doing this operation if you don’t want to take any risk.
+
+Edit the /etc/fstab file and add the mount point (here /mnt), the file system type (here ext4) and the mount options (_netdev):
+
+UUID=... /mnt ext4 _netdev 0 0
+
+Note: The _netdev mount option is mandatory to postpone the mount operation after the network initialization. If you don’t do it, the initiator boot process will be stopped after a timeout in maintenance mode.
+
+To check your configuration, type:
+
+# mount /mnt
+# touch /mnt/testFile
+
+Optionally, you can dump all the initiator configuration (3=max output, 0=min output):
+
+# iscsiadm -m session -P 3
+iSCSI Transport Class version 2.0-870
+version 6.2.0.873-28
+Target: iqn.2014-08.com.example:t1 (non-flash)
+	Current Portal: 192.168.1.81:3260,1
+	Persistent Portal: 192.168.1.81:3260,1
+		**********
+		Interface:
+		**********
+		Iface Name: default
+		Iface Transport: tcp
+		Iface Initiatorname: iqn.2014-08.com.example:client
+		Iface IPaddress: 192.168.1.10
+		Iface HWaddress: 
+		Iface Netdev: 
+		SID: 1
+		iSCSI Connection State: LOGGED IN
+		iSCSI Session State: LOGGED_IN
+		Internal iscsid Session State: NO CHANGE
+		*********
+		Timeouts:
+		*********
+		Recovery Timeout: 120
+		Target Reset Timeout: 30
+		LUN Reset Timeout: 30
+		Abort Timeout: 15
+		*****
+		CHAP:
+		*****
+		username: usr
+		password: ********
+		username_in: 
+		password_in: ********
+		************************
+		Negotiated iSCSI params:
+		************************
+		HeaderDigest: None
+		DataDigest: None
+		MaxRecvDataSegmentLength: 262144
+		MaxXmitDataSegmentLength: 262144
+		FirstBurstLength: 65536
+		MaxBurstLength: 262144
+		ImmediateData: Yes
+		InitialR2T: Yes
+		MaxOutstandingR2T: 1
+		************************
+		Attached SCSI devices:
+		************************
+		Host Number: 2	State: running
+		scsi2 Channel 00 Id 0 Lun: 0
+			Attached scsi disk sda		State: running
+

@@ -1,0 +1,153 @@
+In the iSCSI world, you’ve got two types of agents:
+
+    an iSCSI target provides some storage (here called server),
+    an iSCSI initiator uses this available storage (here called client).
+
+As you already guessed, we are going to use two virtual machines, respectively called server and client. If necessary, the server and client virtual machines can be one and only one machine.
+iSCSI Target Configuration
+
+Most of the target configuration is done interactively through the targetcli command. This command uses a directory tree to access the different objects.
+
+To create an iSCSI target, you need to follow several steps on the server virtual machine.
+
+Install the following packages:
+
+# yum install -y targetcli
+
+Activate the target service at boot:
+
+# systemctl enable target
+
+Note: This is mandatory, otherwise your configuration won’t be read after a reboot!
+
+Execute the targetcli command:
+
+# targetcli
+Warning: Could not load preferences file /root/.targetcli/prefs.bin.
+targetcli shell version 2.1.fb34
+Copyright 2011-2013 by Datera, Inc and others.
+For help on commands, type 'help'.
+/>
+
+You’ve got two options:
+
+    You can create a fileio backstore called shareddata of 100MB in the /opt directory (don’t hesitate to use tab completion):
+
+    /> backstores/fileio/ create shareddata /opt/shareddata.img 100M
+    Created fileio shareddata with size 104857600
+
+    Note: If you don’t specify write_back=false at the end of the previous command, it is assumed write_back=true. The write_back option set to true enables the local file system cache. This improves performance but increases the risk of data loss. In production environments, it is recommended to use write_back=false.
+
+    You can create a block backstore that usually provides the best performance. You can use a block device like /dev/sdb or a logical volume previously created (# lvcreate –name lv_iscsi –size 100M vg):
+
+    /> backstores/block/ create block1 /dev/vg/lv_iscsi
+    Created block storage object block1 using /dev/vg/lv_iscsi.
+
+Then, create an IQN (Iscsi Qualified Name) called iqn.2014-08.com.example with a target named t1 and get an associated TPG (Target Portal Group):
+
+/> iscsi/ create iqn.2014-08.com.example:t1
+Created target iqn.2014-08.com.example:t1.
+Created TPG 1.
+Global pref auto_add_default_portal=true
+Created default portal listening on all IPs (0.0.0.0), port 3260.
+
+Note: The IQN follows the convention of the RFC 3270 (see http://en.wikipedia.org/wiki/ISCSI to get more details).
+
+Now, we can go to the newly created directory:
+
+/> cd iscsi/iqn.2014-08.com.example:t1/tpg1
+/iscsi/iqn.20...ample:t1/tpg1> ls
+o- tpg1 ................................................. [no-gen-acls, no-auth]
+  o- acls ............................................................ [ACLs: 0]
+  o- luns ............................................................ [LUNs: 0]
+  o- portals ...................................................... [Portals: 1]
+    o- 0.0.0.0:3260 ....................................................... [OK]
+
+Below tpg1, three objects have been defined:
+
+    acls (access control lists: restrict access to resources),
+    luns (logical unit number: define exported resources),
+    portals (define ways to reach the exported resources; consist in pairs of IP addresses and ports).
+
+If you use a version pre-RHEL 7.1 (this step is now automatically done by the iscsi/ create command), you need to create a portal (a pair of IP address and port through which the target can be contacted by initiators):
+
+/iscsi/iqn.20...ple:t1/tpg1> portals/ create
+Using default IP port 3260
+Binding to INADDR_ANY (0.0.0.0)
+Created network portal 0.0.0.0:3260.
+
+Whatever version, create a lun depending on the kind of backstore you previously chose:
+
+    Fileio backstore:
+
+    /iscsi/iqn.20...ample:t1/tpg1> luns/ create /backstores/fileio/shareddata
+     Created LUN 0.
+
+    Block backstore:
+
+    /iscsi/iqn.20...ample:t1/tpg1> luns/ create /backstores/block/block1
+     Created LUN 0.
+
+Create an acl with the previously created IQN (here iqn.2014-08.com.example) and an identifier you choose (here client), together creating the future initiator name:
+
+/iscsi/iqn.20...ample:t1/tpg1> acls/ create iqn.2014-08.com.example:client
+Created Node ACL for iqn.2014-08.com.example:client
+Created mapped LUN 0
+
+Optionally, set a userid and a password:
+
+/iscsi/iqn.20...ample:t1/tpg1> cd acls/iqn.2014-08.com.example:client/
+/iscsi/iqn.20...xample:client> set auth userid=usr
+Parameter userid is now 'usr'.
+/iscsi/iqn.20...xample:client> set auth password=pwd
+Parameter password is now 'pwd'.
+
+Now, to check the configuration, type:
+
+/iscsi/iqn.20...om.example:d1> cd ../..
+/iscsi/iqn.20...ple:tgt1/tpg1> ls
+o- tpg1 ................................................. [no-gen-acls, no-auth]
+  o- acls ............................................................ [ACLs: 1]
+  | o- iqn.2014-08.com.example:client ......................... [Mapped LUNs: 1]
+  |   o- mapped_lun0 ............................. [lun0 fileio/shareddata (rw)]
+  o- luns ............................................................ [LUNs: 1]
+  | o- lun0 .......................... [fileio/shareddata (/opt/shareddata.img)]
+  o- portals ...................................................... [Portals: 1]
+    o- 0.0.0.0:3260 ....................................................... [OK]
+
+Finally, you can quit the targetcli command:
+
+/iscsi/iqn.20...ple:tgt1/tpg1> exit
+Global pref auto_save_on_exit=true
+Last 10 configs saved in /etc/target/backup.
+Configuration saved to /etc/target/saveconfig.json
+
+Note: The configuration is automatically saved to the /etc/target/saveconfig.json file.
+
+Also, it can be useful to check the ports currently used:
+
+# netstat -ant
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:3260            0.0.0.0:*               LISTEN
+tcp        0      0 192.168.1.81:22         192.168.1.81:33584      ESTABLISHED
+tcp6       0      0 :::22                   :::*                    LISTEN
+tcp6       0      0 ::1:25                  :::*                    LISTEN
+
+Finally, open the 3260 tcp port in the firewall configuration:
+
+# firewall-cmd --permanent --add-port=3260/tcp
+Success
+
+Note1: With RHEL 7.2 (RHBZ#1150656), there is now a firewalld configuration file for the iscsi-target service. So you can type: # firewall-cmd –permanent –add-service iscsi-target
+Note2: In the new /usr/lib/firewalld/services/iscsi-target.xml configuration file, two lines are specified for the ports: TCP 3260 and UDP 3260. As everything was working fine until now with the TCP 3260 argument, I suppose that you can run iSCSI on top of UDP but it’s not the default option (I didn’t find any details in the RFC7143 on this point).
+
+Reload the firewall configuration:
+
+# firewall-cmd --reload
+Success
+
+
+
