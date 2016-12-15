@@ -22,6 +22,7 @@ else
         if [ "$GENPASS" == "$ORIGPASS" -a "$que1_1" -eq 2000 ]
         then
                 echo "Valid Username-Password Combination"
+		echo "25" > /tmp/marks.txt
                 exit 0
         else
                 echo "Invalid Username-Password Combination"

@@ -14,6 +14,7 @@ if [ ${FIRST_CHECK} == "redhat" -a  ${SECOND_CHECK} == "rwx" ]
 
 then
        	echo "Permission is CORRECT"
+	echo "25" >> /tmp/marks.txt
        	exit 0
    
      

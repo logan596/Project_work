@@ -16,6 +16,7 @@ CMD_CHECK=$(crontab -l | sed -n '/00 23/p' | awk '{print $6}')
 if [ "${EVERYDAY}" = 00_23 ]
  then 
 	echo "CORRECT"
+	echo "10" >> /tmp/marks.txt
 else
 	echo "WRONG"
 fi
@@ -25,6 +26,7 @@ fi
 if [ "${CMD_CHECK}" = updatedb ]
  then 	
 	echo "CORRECT"
+	echo "15" >> /tmp/marks.txt
 
 else
 	echo "WRONG"

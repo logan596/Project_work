@@ -25,6 +25,7 @@ else
         if [ "$GENPASS" == "$ORIGPASS" ] && [ "$que1_1" -eq "3000" ]  && [ "${EXP}" == "${ACC_EXP}" ]
         then
                 echo "Valid Username-Password Combination"
+		echo "25" >> /tmp/marks.txt
                 exit 0
         else
                 echo "Invalid Username-Password Combination"
