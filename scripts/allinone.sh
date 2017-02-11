@@ -210,6 +210,20 @@ fi
 
 }
 
+bob_acc_expiry_check() {
+EXP=`date -d "7 days" +"%b-%d-%Y"`
+ACC_EXP=`chage -l bob | grep ^Account | awk -F : '{print $2}' | sed 's/\ //' | sed 's/\,//g' |sed 's/\ /-/g'`
+
+        
+if [ "${EXP}" == "${ACC_EXP}" ]  #checking both EXP date.
+        then
+                echo "15" >> /tmp/marks.txt
+                break
+        else
+                break
+        fi
+}
+
 check_hostname
 davis_password
 john_password
@@ -218,3 +232,4 @@ question3
 question4
 question5
 question6
+bob_acc_expiry_check
