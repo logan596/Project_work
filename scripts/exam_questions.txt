@@ -59,4 +59,10 @@
 
 #14.Setup a /home/rhce directory to facilitate collaboration among the rhce group.Each member should be able to create files and modify each others’ files, but should not be able to delete any one else’s files in this directory.  >. Done
 
+#22.Create a new user “bob”. Give bob, not in the rhce group,but bob has read and write access to /home/rhce.
+
+#15.Make sure user bob’s account expires after one week.
+
+
+#23.Set up a job to delete all of the regular files in the /home/bob directory on the second day of every month at 8:30 A.M.
 
