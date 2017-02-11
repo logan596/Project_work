@@ -49,10 +49,21 @@
 
 #6.Create a directory named /common. Allow john and davis to share documents in the /common directory using a group called team. Both of them can read, write and remove documents from the other in this directory but any user not member of the group can’t. >>> Done
 
+#11.Create a cron job running as root, starting at 11PM every day and writing a report on daily system resource consumption in the /var/log/consumption.log file.
+	#Create a cron job running as root, starting at 11PM every day and update the databases of host by using updatedb command.
+
+#14.Setup a /home/rhce directory to facilitate collaboration among the rhce group.Each member should be able to create files and modify each others’ files, but should not be able to delete any one else’s files in this directory.
 
 
+#8.Set the default target to boot into X Window level (previously on multi-user.target).
 
+# Remaining part
 
+#15.Make sure user bob’s account expires after one week.
+
+#22.Create a new user “bob”. Give bob, not in the rhce group, read and write access to /home/rhce.
+
+#23.Set up a job to delete all of the regular files in the /home/bob directory on the second day of every month at 8:30 A.M.
 
 
 
