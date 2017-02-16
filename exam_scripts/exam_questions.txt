@@ -59,9 +59,11 @@
 
 # Remaining part
 
+
+#22.Create a new user “bob”. Give bob, not in the rhce group,but bob has read and write access to /home/rhce.
+
 #15.Make sure user bob’s account expires after one week.
 
-#22.Create a new user “bob”. Give bob, not in the rhce group, read and write access to /home/rhce.
 
 #23.Set up a job to delete all of the regular files in the /home/bob directory on the second day of every month at 8:30 A.M.
 

@@ -223,7 +223,59 @@ if [ "${EXP}" == "${ACC_EXP}" ]  #checking both EXP date.
                 break
         fi
 }
+bob_cron_checker() {
+#############################################################################################################################
+#  Set up a job to delete all of the regular files in the /home/bob directory on the second day of every month at 8:30 A.M. #
+#############################################################################################################################
 
+EVERYDAY=$(crontab -l | sed -n 's/30 08 2/30_08_2/p' | awk '{print $1}')
+CMD_CHECK=$(crontab -l | sed -n '/30 08 2/p' | awk '{print $6$7$8}')
+#Check if job runs everyday @8:30 or not.
+
+if [ "${EVERYDAY}" = 30_08_2 ]
+ then
+        echo "10" >> /tmp/marks.txt
+else
+        break
+fi
+
+#Check for Command i.e updatedb or not
+
+if [ "${CMD_CHECK}" =  "rm-rf/home/bob" ]
+ then
+        echo "10" >> /tmp/marks.txt
+
+else
+       break
+
+fi
+}
+
+crate_user_bob(){
+
+##############################################################################################################
+#  Create a new user “bob”. Give bob, not in the rhce group,but bob has read and write access to /home/rhce. #
+##############################################################################################################
+SETPERM=$(getfacl -p /home/rhce/ | grep bob | awk -F : '{print $3}')
+read USERNAME <<< "bob"
+que1_1=$(cat /etc/passwd | grep  ^bob | awk -F : '{print $3}')
+id -u $USERNAME > /dev/null
+if [ $? -ne 0 ]
+then
+        #echo "User $USERNAME is not valid"
+        break
+else
+        if [ ${SETPERM} == "rwx" ] #Checking for RWX permission
+
+        then
+                echo "20" >> "/tmp/marks.txt"
+                break
+       else
+                break
+        fi
+fi
+
+}
 check_hostname
 davis_password
 john_password
@@ -232,4 +284,7 @@ question3
 question4
 question5
 question6
+crate_user_bob
 bob_acc_expiry_check
+bob_cron_checker
+
