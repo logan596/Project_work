@@ -8,9 +8,9 @@
 
 4.) Hello-world testing completed on docker engine.
 
-5.) download mariadb:10.1.18 image and run this on container named mariadbtest on port 8081 and Mysql root password is mailjol@123 
+5.) download mariadb:10.1.18 image and run this on container named mariadbtest on port 8081 and Mysql root password is abcd1234 
 
-6.) download wordpress:4.6.1 image and run this in container named wordpresstest on port 8080 password is mailjol@123 
+6.) download wordpress:4.6.1 image and run this in container named wordpresstest on port 8080 password is abcd1234 
 
 7.) Create Intro web page.
 
